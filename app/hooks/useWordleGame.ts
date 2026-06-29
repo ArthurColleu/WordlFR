@@ -52,10 +52,17 @@ export function useWordleGame() {
         setDate(data.date);
         const raw = localStorage.getItem(storageKey(data.date));
         if (raw) {
-          const parsed: StoredProgress = JSON.parse(raw);
-          setAttempts(parsed.attempts);
-          setStatus(parsed.status);
+          try {
+            const parsed: StoredProgress = JSON.parse(raw);
+            setAttempts(parsed.attempts);
+            setStatus(parsed.status);
+          } catch {
+            // Corrupted localStorage payload — ignore and start a fresh game.
+          }
         }
+      })
+      .catch(() => {
+        setError("Réessaie plus tard.");
       });
   }, []);
 
@@ -80,18 +87,29 @@ export function useWordleGame() {
       // The server never returns the target word — only the colored result
       // and isCorrect. We do not send an attempt count (the 6-attempt limit is
       // enforced here, client-side).
-      const res = await fetch("/api/word", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ guess }),
-      });
+      let data: { result: LetterState[]; isCorrect: boolean };
+      try {
+        const res = await fetch("/api/word", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ guess }),
+        });
 
-      if (res.status === 400) {
-        setError("Ce mot n'existe pas dans le dictionnaire.");
+        if (res.status === 400) {
+          setError("Ce mot n'existe pas dans le dictionnaire.");
+          return;
+        }
+
+        if (!res.ok) {
+          setError("Réessaie plus tard.");
+          return;
+        }
+
+        data = await res.json();
+      } catch {
+        setError("Réessaie plus tard.");
         return;
       }
-
-      const data: { result: LetterState[]; isCorrect: boolean } = await res.json();
 
       const nextAttempts = [...attempts, { guess, result: data.result }];
       let nextStatus: GameStatus = "playing";
