@@ -85,6 +85,8 @@ Voir le tableau de critères dans [`docs/cahier-des-charges.md`](cahier-des-char
 ## 4. Gestion de projet
 
 ### 4.1 Méthodologie
+> Détail et comparaison (cycle en V vs Agile) : [`methodologie.md`](methodologie.md)
+
 Développement **itératif et incrémental**, organisé en phases livrables :
 1. Fondations (monorepo, base de données, authentification)
 2. Cœur de jeu (anti-triche, évaluation, persistance des essais)
@@ -252,9 +254,12 @@ Points de conception clés :
 | Document | Contenu |
 |----------|---------|
 | [`cahier-des-charges.md`](cahier-des-charges.md) | Contexte, fonctionnalités, contraintes, critères d'acceptation |
-| [`mcd-mld.md`](mcd-mld.md) | Modèle conceptuel et logique de données, SQL |
+| [`methodologie.md`](methodologie.md) | Méthodologie (cycle en V vs Agile), itérations, traçabilité |
+| [`mcd-mld.md`](mcd-mld.md) | Modèles de données : MCD, MLD **et MPD** |
+| [`diagrammes-uml.md`](diagrammes-uml.md) | Cas d'utilisation, paquets, classes, séquence, déploiement |
 | [`maquettes.md`](maquettes.md) | Palette, wireframes, responsive |
 | [`plan-de-tests.md`](plan-de-tests.md) | Tests unitaires, intégration, manuels et résultats |
+| [`preuves-api.md`](preuves-api.md) | Preuves API mappées aux compétences RNCP |
 | [`deploiement.md`](deploiement.md) | Docker, Render, variables, CI/CD, checklist prod |
 | [`securite-owasp.md`](securite-owasp.md) | Couverture OWASP Top 10 |
 | [`green-it.md`](green-it.md) | Éco-conception |
