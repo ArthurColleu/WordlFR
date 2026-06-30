@@ -3,15 +3,15 @@
 ## MCD (Modèle Conceptuel de Données)
 
 ```
-┌──────────────┐        ┌─────────────────┐        ┌──────────────┐
-│    USERS     │        │   DAILY_WORDS   │        │    GAMES     │
-│──────────────│        │─────────────────│        │──────────────│
-│ id (PK)      │◄──────┤ created_by (FK) │        │ id (PK)      │
-│ email        │  crée  │ id (PK)         │◄──────┤ daily_word_id│
-│ password_hash│        │ date (UNIQUE)   │ pour   │ user_id (FK) │
-│ role         │        │ word            │        │ status       │
-│ created_at   │        │ created_at      │        │ started_at   │
-└──────────────┘        └─────────────────┘        │ finished_at  │
+┌──────────────┐        ┌─────────────────┐         ┌──────────────┐
+│    USERS     │        │   DAILY_WORDS   │         │    GAMES     │
+│──────────────│        │─────────────────│         │──────────────│
+│ id (PK)      │◄───────┤ created_by (FK) │         │ id (PK)      │
+│ email        │  crée  │ id (PK)         │◄────────┤ daily_word_id│
+│ password_hash│        │ date (UNIQUE)   │ pour    │ user_id (FK) │
+│ role         │        │ word            │         │ status       │
+│ created_at   │        │ created_at      │         │ started_at   │
+└──────────────┘        └─────────────────┘         │ finished_at  │
         │                                           └──────┬───────┘
         │ joue                                             │ contient
         └──────────────────────────────────────────────────┘
