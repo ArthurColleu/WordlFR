@@ -56,6 +56,30 @@ export const DICTIONARY: string[] = [
   "matin", "soirs", "nuits", "midis", "annee", "jours", "heure", "duree",
   "delai", "aubes", "joies", "larme", "reves", "ennui", "grace", "merci",
   "adieu", "salut",
+  // — animaux (2) —
+  "lions", "ourse", "truie", "poney", "raton", "tique", "cobra", "aspic",
+  "mante", "loirs",
+  // — arbres & plantes —
+  "cedre", "saule", "frene", "aulne", "myrte", "lilas", "roses", "aster",
+  "sauge", "epine", "liane", "thuya", "ormes",
+  // — maison & outils (2) —
+  "etage", "rampe", "caves", "tuile", "tamis", "cable", "gaine", "prise",
+  "fiche", "forge", "loque", "beche", "serpe", "limon",
+  // — nourriture (2) —
+  "soupe", "puree", "grain", "epice", "feves", "colza", "gelee", "rotie",
+  "gigue", "mache", "kakis",
+  // — verbes (2) —
+  "finir", "nuire", "cuire", "luire", "haler", "peler", "meler", "trier",
+  "frire",
+  // — adjectifs (2) —
+  "vrais", "exact", "grave", "utile", "sobre", "ivres", "aride", "trapu",
+  "frele", "sourd", "muets", "leste", "dodue", "fluet", "pales", "laids",
+  "beaux", "fiers", "sages", "rudes", "plats", "ronds", "longs",
+  // — corps (2) —
+  "reins", "tibia", "paume", "nuque", "buste",
+  // — météo & abstractions (2) —
+  "givre", "grele", "vents", "bruit", "echos", "ombre", "lueur", "rayon",
+  "halos",
 ];
 
 const DICTIONARY_SET = new Set(DICTIONARY);
