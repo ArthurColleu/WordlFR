@@ -14,6 +14,7 @@ export default function Game() {
   const [shake, setShake] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: "info" | "error" | "success" } | null>(null);
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
   const [wonRow, setWonRow] = useState<number | undefined>(undefined);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -43,7 +44,10 @@ export default function Game() {
 
   const handleKey = useCallback(
     async (key: string) => {
-      if (!state || state.status !== "in_progress") return;
+      // Bloque toute saisie si la partie est finie OU si un essai est en cours
+      // d'envoi (sinon, sur une connexion lente, le joueur peut continuer à
+      // taper/valider tant que le serveur n'a pas répondu).
+      if (!state || state.status !== "in_progress" || submitting) return;
 
       if (key === "←") {
         setCurrentGuess((g) => g.slice(0, -1));
@@ -51,6 +55,7 @@ export default function Game() {
       }
       if (key === "ENTRÉE") {
         if (currentGuess.length < 5) { triggerShake(); showToast("5 lettres requises", "error"); return; }
+        setSubmitting(true);
         try {
           const result = await api.submitGuess(currentGuess);
           setState((prev) => {
@@ -68,6 +73,8 @@ export default function Game() {
           } else if (e instanceof ApiError && e.status === 409) {
             showToast("Partie terminée.", "info");
           }
+        } finally {
+          setSubmitting(false);
         }
         return;
       }
@@ -75,7 +82,7 @@ export default function Game() {
         setCurrentGuess((g) => g + key);
       }
     },
-    [state, currentGuess],
+    [state, currentGuess, submitting],
   );
 
   const triggerShake = () => {
@@ -84,7 +91,7 @@ export default function Game() {
   };
 
   const gameOver = state?.status === "won" || state?.status === "lost";
-  const isDisabled = gameOver || loading;
+  const isDisabled = gameOver || loading || submitting;
 
   return (
     <div className="flex flex-col min-h-screen">
