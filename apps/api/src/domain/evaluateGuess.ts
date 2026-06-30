@@ -13,26 +13,13 @@ export function evaluateGuess(guess: string, target: string): LetterState[] {
       remaining[t[i]] = (remaining[t[i]] ?? 0) + 1;
     }
   }
-
   for (let i = 0; i < g.length; i++) {
     if (result[i] === "correct") continue;
     const letter = g[i];
     if (remaining[letter] > 0) {
       result[i] = "present";
       remaining[letter] -= 1;
-    } else {
-      result[i] = "absent";
     }
   }
-
   return result;
-}
-
-export function dailyFallbackWord(date: string, dictionary: string[]): string {
-  let hash = 0;
-  for (let i = 0; i < date.length; i++) {
-    hash = (hash * 31 + date.charCodeAt(i)) >>> 0;
-  }
-  const index = hash % dictionary.length;
-  return dictionary[index];
 }
