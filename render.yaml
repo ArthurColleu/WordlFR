@@ -7,8 +7,10 @@ databases:
 services:
   - type: web
     name: wordlfr
-    env: node
+    runtime: node
     plan: free
+    region: frankfurt
+    healthCheckPath: /api/health
     buildCommand: "npm --prefix apps/web ci --include=dev && npm --prefix apps/web run build && npm --prefix apps/api ci --include=dev && npm --prefix apps/api run build"
     startCommand: "node apps/api/dist/server.js"
     envVars:
