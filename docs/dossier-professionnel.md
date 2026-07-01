@@ -261,6 +261,7 @@ Points de conception clés :
 | [`plan-de-tests.md`](plan-de-tests.md) | Tests unitaires, intégration, manuels et résultats |
 | [`preuves-api.md`](preuves-api.md) | Preuves API mappées aux compétences RNCP |
 | [`deploiement.md`](deploiement.md) | Docker, Render, variables, CI/CD, checklist prod |
+| [`ci-cd-securite.md`](ci-cd-securite.md) | Synthèse CI/CD, JWT+bcrypt, rate limiting (mémoire→Redis), OWASP |
 | [`securite-owasp.md`](securite-owasp.md) | Couverture OWASP Top 10 |
 | [`green-it.md`](green-it.md) | Éco-conception |
 | [`rgpd.md`](rgpd.md) | Conformité RGPD |
