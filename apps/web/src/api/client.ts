@@ -61,11 +61,13 @@ export interface GameState {
   status: "in_progress" | "won" | "lost";
   maxAttempts: 6;
   attempts: { guess: string; result: LetterState[] }[];
+  word?: string; // révélé uniquement en fin de partie (won/lost)
 }
 
 export interface GuessResult {
   result: LetterState[];
   status: "in_progress" | "won" | "lost";
+  word?: string; // révélé uniquement en fin de partie (won/lost)
 }
 
 export interface PlayerStats {

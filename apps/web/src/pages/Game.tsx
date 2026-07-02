@@ -62,7 +62,8 @@ export default function Game() {
             if (!prev) return prev;
             const nextAttempts = [...prev.attempts, { guess: currentGuess, result: result.result }];
             if (result.status === "won") setWonRow(nextAttempts.length - 1);
-            return { ...prev, attempts: nextAttempts, status: result.status };
+            // `word` n'est présent que si la partie est terminée (révélé par le serveur)
+            return { ...prev, attempts: nextAttempts, status: result.status, word: result.word ?? prev.word };
           });
           setCurrentGuess("");
           if (result.status === "won") setTimeout(() => showToast("🎉 Bravo !", "success"), 1600);
@@ -121,7 +122,9 @@ export default function Game() {
         {/* Live status for screen readers */}
         <div aria-live="assertive" className="sr-only">
           {state?.status === "won" ? "Félicitations ! Vous avez trouvé le mot !" : ""}
-          {state?.status === "lost" ? "Partie terminée. Vous n'avez pas trouvé le mot." : ""}
+          {state?.status === "lost"
+            ? `Partie terminée. Vous n'avez pas trouvé le mot.${state?.word ? ` Le mot était ${state.word}.` : ""}`
+            : ""}
         </div>
 
         {loading && <Spinner />}
@@ -141,6 +144,11 @@ export default function Game() {
 
         {gameOver && (
           <div className="text-center mt-2 pb-4">
+            {state?.status === "lost" && state?.word && (
+              <p className="mb-3 text-slate-300">
+                Le mot était&nbsp;: <strong className="text-white uppercase tracking-wide">{state.word}</strong>
+              </p>
+            )}
             <Link to="/statistiques" className="inline-block px-6 py-2.5 bg-indigo-500 hover:bg-indigo-400 text-white font-bold rounded-xl transition">
               Voir mes statistiques
             </Link>

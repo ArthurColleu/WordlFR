@@ -15,11 +15,15 @@ export interface GameState {
   status: GameStatus;
   maxAttempts: typeof MAX_ATTEMPTS;
   attempts: { guess: string; result: import("../../domain/evaluateGuess.js").LetterState[] }[];
+  // Mot à deviner : révélé UNIQUEMENT quand la partie est terminée (won/lost),
+  // jamais pendant qu'elle est in_progress (anti-triche).
+  word?: string;
 }
 
 export interface GuessResult {
   result: import("../../domain/evaluateGuess.js").LetterState[];
   status: GameStatus;
+  word?: string; // révélé uniquement en fin de partie (won/lost)
 }
 
 export function makeGamesService(
@@ -57,9 +61,11 @@ export function makeGamesService(
 
   return {
     async getToday(userId: number): Promise<GameState> {
-      const { game } = await ensureWordAndGame(userId);
+      const { word, game } = await ensureWordAndGame(userId);
       const attempts = await repo.listGuesses(game.id);
-      return { status: game.status, maxAttempts: MAX_ATTEMPTS, attempts };
+      const state: GameState = { status: game.status, maxAttempts: MAX_ATTEMPTS, attempts };
+      if (game.status !== "in_progress") state.word = word.word; // révélé en fin de partie
+      return state;
     },
 
     async submitGuess(userId: number, guess: string): Promise<GuessResult> {
@@ -95,7 +101,8 @@ export function makeGamesService(
         await repo.updateGameStatus(game.id, status);
       }
 
-      return { result, status };
+      // Le mot n'est renvoyé que si la partie est terminée (anti-triche préservé)
+      return status === "in_progress" ? { result, status } : { result, status, word: word.word };
     },
   };
 }

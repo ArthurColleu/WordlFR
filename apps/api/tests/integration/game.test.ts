@@ -71,7 +71,13 @@ describe("POST /api/game/guess", () => {
     expect(res.status).toBe(400);
   });
 
-  it("accepts a valid guess and returns result + status, word NEVER exposed", async () => {
+  it("accepts a valid guess and returns result + status, word NEVER exposed while in progress", async () => {
+    // On fixe un mot du jour connu et différent de l'essai → partie encore en cours.
+    const { makeGamesRepository } = await import("../../src/modules/games/games.repository");
+    const repo = makeGamesRepository(db);
+    const testDate = new Date().toISOString().slice(0, 10);
+    await repo.insertDailyWord(testDate, "vivre", null);
+
     const agent = request.agent(app);
     await agentWithSession(agent);
     await agent.get("/api/game/today");
@@ -81,9 +87,38 @@ describe("POST /api/game/guess", () => {
     res.body.result.forEach((s: unknown) =>
       expect(["correct", "present", "absent"]).toContain(s),
     );
-    expect(res.body.status).toMatch(/^(in_progress|won|lost)$/);
-    // Anti-cheat: word must never appear in any response body key
-    expect(JSON.stringify(res.body)).not.toMatch(/\bword\b/);
+    expect(res.body.status).toBe("in_progress");
+    // Anti-cheat : tant que la partie est en cours, le mot n'est jamais renvoyé
+    expect(res.body.word).toBeUndefined();
+    expect(JSON.stringify(res.body)).not.toMatch(/vivre/);
+  });
+
+  it("reveals the target word only once the game is over (lost)", async () => {
+    const { makeGamesRepository } = await import("../../src/modules/games/games.repository");
+    const repo = makeGamesRepository(db);
+    const testDate = new Date().toISOString().slice(0, 10);
+    await repo.insertDailyWord(testDate, "vivre", null);
+
+    const agent = request.agent(app);
+    await agentWithSession(agent);
+
+    const wrong = ["table", "porte", "fleur", "jouer", "monde", "temps"];
+    let last: Awaited<ReturnType<typeof agent.post>> | undefined;
+    for (const w of wrong) {
+      last = await agent.post("/api/game/guess").send({ guess: w });
+      if (last.body.status === "in_progress") {
+        // le mot reste caché tant qu'on joue
+        expect(last.body.word).toBeUndefined();
+      }
+    }
+    // 6 essais faux → perdu → le mot est révélé
+    expect(last!.body.status).toBe("lost");
+    expect(last!.body.word).toBe("vivre");
+
+    // GET /today révèle aussi le mot une fois la partie terminée
+    const state = await agent.get("/api/game/today");
+    expect(state.body.status).toBe("lost");
+    expect(state.body.word).toBe("vivre");
   });
 
   it("accumulates attempts and reflects them in GET /today", async () => {
