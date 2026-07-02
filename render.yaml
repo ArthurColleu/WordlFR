@@ -3,6 +3,7 @@ databases:
     databaseName: wordlfr
     user: wordlfr
     plan: free
+    region: frankfurt
 
 services:
   - type: web
