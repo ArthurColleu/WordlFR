@@ -36,10 +36,13 @@ function GuessBar({ count, total, n }: { count: number; total: number; n: number
 }
 
 export default function Stats() {
-  const { user, logout } = useAuth();
+  const { user, logout, deleteAccount } = useAuth();
   const [stats, setStats] = useState<PlayerStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState(false);
 
   useEffect(() => {
     api.getStats()
@@ -47,6 +50,18 @@ export default function Stats() {
       .catch(() => setError(true))
       .finally(() => setLoading(false));
   }, []);
+
+  const handleDeleteAccount = async () => {
+    setDeleting(true);
+    setDeleteError(false);
+    try {
+      await deleteAccount();
+      // user passe à null → ProtectedRoute redirige vers /connexion
+    } catch {
+      setDeleteError(true);
+      setDeleting(false);
+    }
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -97,6 +112,49 @@ export default function Stats() {
             </section>
           </>
         )}
+
+        <section aria-labelledby="account-heading" className="mt-12 pt-6 border-t border-slate-800">
+          <h2 id="account-heading" className="text-lg font-bold text-white mb-1">Mon compte</h2>
+          <p className="text-sm text-slate-400 mb-4">Connecté en tant que {user?.email}</p>
+
+          {!confirmingDelete ? (
+            <button
+              onClick={() => setConfirmingDelete(true)}
+              className="text-red-400 hover:text-red-300 transition text-xs border border-red-900 hover:border-red-700 px-3 py-1.5 rounded-lg"
+            >
+              Supprimer mon compte
+            </button>
+          ) : (
+            <div className="bg-red-950/40 border border-red-900 rounded-xl p-4" role="alertdialog" aria-labelledby="delete-warning">
+              <p id="delete-warning" className="text-sm text-red-200 mb-4">
+                Cette action est définitive : votre compte, vos parties et vos statistiques
+                seront supprimés. Voulez-vous vraiment continuer ?
+              </p>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={handleDeleteAccount}
+                  disabled={deleting}
+                  className="bg-red-600 hover:bg-red-500 disabled:opacity-50 transition text-white text-xs font-bold px-3 py-1.5 rounded-lg"
+                >
+                  {deleting ? "Suppression…" : "Confirmer la suppression"}
+                </button>
+                <button
+                  onClick={() => setConfirmingDelete(false)}
+                  disabled={deleting}
+                  className="text-slate-400 hover:text-white transition text-xs border border-slate-700 px-3 py-1.5 rounded-lg"
+                >
+                  Annuler
+                </button>
+              </div>
+            </div>
+          )}
+
+          {deleteError && (
+            <p className="text-red-400 text-sm mt-3" role="alert">
+              La suppression a échoué. Veuillez réessayer.
+            </p>
+          )}
+        </section>
       </main>
     </div>
   );
