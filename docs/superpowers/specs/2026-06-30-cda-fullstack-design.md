@@ -38,7 +38,7 @@ Reconstruire le jeu Wordle quotidien en une **application full-stack 3-tier** qu
 ## 4. Architecture / structure du monorepo
 
 ```
-ProjectBack/
+WordlFR/
   apps/
     api/                          # Backend Express + TypeScript
       src/

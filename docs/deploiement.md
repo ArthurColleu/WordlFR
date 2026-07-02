@@ -36,7 +36,7 @@ Internet
 
 ```bash
 git clone <repo>
-cd ProjectBack
+cd WordlFR
 
 # 1. Copier et configurer les variables d'environnement
 cp .env.example .env
@@ -87,7 +87,7 @@ Internet (HTTPS, TLS Render)
 **Procédure (3 clics) :**
 
 1. Sur [render.com](https://render.com) → **New** → **Blueprint**.
-2. Sélectionner le dépôt GitHub `ProjectBack` (branche `main`).
+2. Sélectionner le dépôt GitHub `WordlFR` (branche `main`).
 3. Render lit `render.yaml`, provisionne la base + le service, puis **Apply**.
 
 **Ce que `render.yaml` automatise :**
