@@ -57,9 +57,12 @@ export function makeGamesRepository(db: Db) {
       );
     },
     async updateGameStatus(gameId: number, status: GameStatus) {
+      // NB : ne pas réutiliser $1 dans deux contextes de type (varchar vs text),
+      // sinon PostgreSQL rejette (« inconsistent types deduced for parameter $1 »).
+      // On passe donc un booléen dédié pour finished_at.
       await db.query(
-        "UPDATE games SET status = $1, finished_at = CASE WHEN $1 = 'in_progress' THEN NULL ELSE now() END WHERE id = $2",
-        [status, gameId],
+        "UPDATE games SET status = $1, finished_at = CASE WHEN $2 THEN now() ELSE NULL END WHERE id = $3",
+        [status, status !== "in_progress", gameId],
       );
     },
   };
