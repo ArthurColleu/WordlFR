@@ -63,8 +63,20 @@ export function makeGamesService(
     async getToday(userId: number): Promise<GameState> {
       const { word, game } = await ensureWordAndGame(userId);
       const attempts = await repo.listGuesses(game.id);
-      const state: GameState = { status: game.status, maxAttempts: MAX_ATTEMPTS, attempts };
-      if (game.status !== "in_progress") state.word = word.word; // révélé en fin de partie
+
+      // Auto-réparation : si une partie est restée "in_progress" alors qu'elle
+      // est en réalité terminée (mot trouvé, ou 6 essais épuisés), on recalcule
+      // et on persiste le bon statut. Rend le système robuste aux échecs partiels.
+      let status = game.status;
+      if (status === "in_progress") {
+        const won = attempts.some((a) => a.result.every((s: string) => s === "correct"));
+        if (won) status = "won";
+        else if (attempts.length >= MAX_ATTEMPTS) status = "lost";
+        if (status !== "in_progress") await repo.updateGameStatus(game.id, status);
+      }
+
+      const state: GameState = { status, maxAttempts: MAX_ATTEMPTS, attempts };
+      if (status !== "in_progress") state.word = word.word; // révélé en fin de partie
       return state;
     },
 

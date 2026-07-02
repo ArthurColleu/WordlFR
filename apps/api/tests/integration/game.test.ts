@@ -121,6 +121,33 @@ describe("POST /api/game/guess", () => {
     expect(state.body.word).toBe("vivre");
   });
 
+  it("heals a game stuck in_progress with 6 attempts (→ lost) on GET /today", async () => {
+    const { makeGamesRepository } = await import("../../src/modules/games/games.repository");
+    const repo = makeGamesRepository(db);
+    const testDate = new Date().toISOString().slice(0, 10);
+    const word = await repo.insertDailyWord(testDate, "vivre", null);
+
+    const agent = request.agent(app);
+    const reg = await agent.post("/api/auth/register").send(creds);
+    const userId = reg.body.user.id;
+
+    // On fabrique une partie « coincée » : 6 essais insérés mais statut jamais mis à jour
+    const game = await repo.createGame(userId, word.id);
+    const absent = ["absent", "absent", "absent", "absent", "absent"] as ("absent")[];
+    for (let i = 1; i <= 6; i++) {
+      await repo.insertGuess(game.id, i, "table", absent);
+    }
+
+    // getToday doit recalculer et persister le statut "lost"
+    const state = await agent.get("/api/game/today");
+    expect(state.body.status).toBe("lost");
+    expect(state.body.word).toBe("vivre");
+
+    // et les statistiques comptent bien la partie
+    const stats = await agent.get("/api/stats");
+    expect(stats.body.gamesPlayed).toBe(1);
+  });
+
   it("accumulates attempts and reflects them in GET /today", async () => {
     const agent = request.agent(app);
     await agentWithSession(agent);
