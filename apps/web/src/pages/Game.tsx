@@ -149,9 +149,6 @@ export default function Game() {
                 Le mot était&nbsp;: <strong className="text-white uppercase tracking-wide">{state.word}</strong>
               </p>
             )}
-            <Link to="/statistiques" className="inline-block px-6 py-2.5 bg-indigo-500 hover:bg-indigo-400 text-white font-bold rounded-xl transition">
-              Voir mes statistiques
-            </Link>
           </div>
         )}
       </main>
