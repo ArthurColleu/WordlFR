@@ -115,12 +115,12 @@ export default function Stats() {
 
         <section aria-labelledby="account-heading" className="mt-12 pt-6 border-t border-slate-800">
           <h2 id="account-heading" className="text-lg font-bold text-white mb-1">Mon compte</h2>
-          <p className="text-sm text-slate-400 mb-4">Connecté en tant que {user?.email}</p>
+          <p className="text-base text-slate-400 text-white mb-4">Connecté en tant que {user?.email}</p>
 
           {!confirmingDelete ? (
             <button
               onClick={() => setConfirmingDelete(true)}
-              className="text-red-400 hover:text-red-300 transition text-xs border border-red-900 hover:border-red-700 px-3 py-1.5 rounded-lg"
+              className="text-red-300 hover:text-red-100 transition text-base border border-red-900 hover:border-red-700 px-3 py-1.5 rounded-lg"
             >
               Supprimer mon compte
             </button>
@@ -134,7 +134,7 @@ export default function Stats() {
                 <button
                   onClick={handleDeleteAccount}
                   disabled={deleting}
-                  className="bg-red-600 hover:bg-red-500 disabled:opacity-50 transition text-white text-xs font-bold px-3 py-1.5 rounded-lg"
+                  className="bg-red-600 hover:bg-red-500 disabled:opacity-50 transition text-white text-base font-bold px-3 py-1.5 rounded-lg"
                 >
                   {deleting ? "Suppression…" : "Confirmer la suppression"}
                 </button>
